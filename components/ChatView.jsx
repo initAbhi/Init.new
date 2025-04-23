@@ -16,24 +16,26 @@ import "highlight.js/styles/github-dark.css";
 import Prompt from "@/data/Prompt";
 import { useSidebar } from "./ui/sidebar";
 
+export const countToken = (inputText) => {
+  return inputText
+    .trim()
+    .split(/\s+/)
+    .filter((word) => word).length;
+};
+
 const ChatView = () => {
   const { id } = useParams();
-  // console.log("ID from params:", id);
   const [userInput, setUserInput] = useState();
   const UpdateWorkspace = useMutation(api.workspace.UpdateWorkspace);
   const messagesEndRef = useRef(null);
   const convex = useConvex();
   const { messages, setMessages } = useContext(MessagesContext);
-  const [loader, setLoader] = useState(false)
-  const {toggleSidebar} = useSidebar()
-
+  const [loader, setLoader] = useState(false);
+  const { toggleSidebar } = useSidebar();
+  const UpdateToken = useMutation(api.users.UpdateToken);
 
   const { userDetail, setUserDetail } = useContext(UserDetailContext);
   console.log("initial messages", messages);
-
-  // const scrollToBottom = () => {
-  //   messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  // };
 
   useEffect(() => {
     getWorkspaceData();
@@ -56,7 +58,7 @@ const ChatView = () => {
   }, [messages]);
 
   const getUserResponse = async (msgs) => {
-    setLoader(true)
+    setLoader(true);
     const prom = msgs[msgs?.length - 1].content;
     const newPrompt = Prompt.CHAT_PROMPT + prom;
     console.log(newPrompt);
@@ -71,11 +73,20 @@ const ChatView = () => {
       }
     );
     const res = await response.json();
-    console.log("user response", res);
     const updatedMessages = [...msgs, { content: res.response, role: "model" }];
     setMessages(updatedMessages);
+
     await UpdateWorkspace({ id, newMessages: updatedMessages });
-    setLoader(false)
+
+    const token =
+      Number(userDetail?.token) -
+      Number(countToken(JSON.stringify(res.response)));
+    await UpdateToken({
+      userId: userDetail?._id,
+      token: token,
+    });
+
+    setLoader(false);
   };
 
   const getWorkspaceData = async () => {
@@ -98,8 +109,11 @@ const ChatView = () => {
       return updated;
     });
   };
+  console.log("check = ", userDetail);
   return (
     <div className="relative h-[85vh] flex flex-col">
+     
+      
       <div className="flex-1 overflow-y-scroll scrollbar-hidden pl-5">
         {messages?.map((msg, index) => (
           <div
@@ -119,47 +133,52 @@ const ChatView = () => {
               <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
                 {msg.content}
               </ReactMarkdown>
-              
             </div>
           </div>
         ))}
-        {loader && <div className="bg-[#272727] p-3 rounded-lg mb-2 flex gap-2 items-start "> <Loader2Icon className="animate-spin " />
-              <h2>Generating response...</h2>
-              </div>}
+        {loader && (
+          <div className="bg-[#272727] p-3 rounded-lg mb-2 flex gap-2 items-start ">
+            {" "}
+            <Loader2Icon className="animate-spin " />
+            <h2>Generating response...</h2>
+          </div>
+        )}
         <div ref={messagesEndRef} />
       </div>
       {/* Input section */}
       <div className="flex gap=2 items-end">
-       {userDetail && <Image className="rounded-full cursor-pointer" onClick={toggleSidebar} src={userDetail?.picture} alt='user' width={30} height={30} />} 
+        
 
-      <motion.div
-        className="p-5 border rounded-xl max-w-2xl w-full mt-3"
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.6, duration: 0.5 }}
-      >
-        <div className="flex gap-2">
-          <textarea
-            className="outline-none bg-transparent w-full h-32 max-h-56 resize-none"
-            onChange={(e) => setUserInput(e.target.value)}
-            type="text"
-            placeholder={Lookup.INPUT_PLACEHOLDER}
-          />
-          {userInput && (
-            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-              <ArrowRight
-                onClick={() => onGenerate(userInput)}
-                className="bg-[#ff0] text-black drop-shadow-[0_0_10px_rgba(255,255,0,0.7)] p-2 h-8 w-8 rounded-md cursor-pointer"
-              />
-            </motion.div>
-          )}
-        </div>
-        <div>
-          <Link className="h-5 w-5" />
-        </div>
-      </motion.div>
+        <motion.div
+          className="p-5 border rounded-xl max-w-2xl w-full mt-3"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.6, duration: 0.5 }}
+        >
+          <div className="flex gap-2">
+            <textarea
+              className="outline-none bg-transparent w-full h-32 max-h-56 resize-none"
+              onChange={(e) => setUserInput(e.target.value)}
+              type="text"
+              placeholder={Lookup.INPUT_PLACEHOLDER}
+            />
+            {userInput && (
+              <motion.div
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <ArrowRight
+                  onClick={() => onGenerate(userInput)}
+                  className="bg-[#ff0] text-black drop-shadow-[0_0_10px_rgba(255,255,0,0.7)] p-2 h-8 w-8 rounded-md cursor-pointer"
+                />
+              </motion.div>
+            )}
+          </div>
+          <div>
+            <Link className="h-5 w-5" />
+          </div>
+        </motion.div>
       </div>
-
     </div>
   );
 };

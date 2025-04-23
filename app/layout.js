@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import { Pacifico } from "next/font/google";
 import ConvexClientProvider from "./ConvexClientProvider";
 
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -33,22 +34,23 @@ export default function RootLayout({ children }) {
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[url('/space.jpg')] bg-cover bg-center scrollbar-hidden `}
       >
         <div className="inset-0 bg-black/85 min-h-screen">
-        
-        {/* Light coming from the top */}
-  <div className="absolute inset-0 bg-gradient-to-b from-white/20 via-transparent to-transparent mix-blend-lighten"></div>
-  <ConvexClientProvider>
+          <ConvexClientProvider>
+            {/* Light coming from the top */}
+            <div className="absolute inset-0 bg-gradient-to-b from-white/20 via-transparent to-transparent mix-blend-lighten"></div>
 
-        <Provider>
-        <div className="relative z-10 text-white text-center ">
+            <div className="relative z-10 text-white text-center ">
+            
+              <Provider>
+                <div>
 
-        <Header />
-        {children}
+                <Header />
+                {children}
+                </div>
+              </Provider>
+
+            </div>
+          </ConvexClientProvider>
         </div>
-        </Provider>
-        
-  </ConvexClientProvider>
-  </div>
-
       </body>
     </html>
   );

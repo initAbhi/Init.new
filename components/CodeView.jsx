@@ -18,6 +18,8 @@ import { MessagesContext } from "@/context/MessagesContext";
 import { api } from "@/convex/_generated/api";
 import { useConvex, useMutation } from "convex/react";
 import { useParams } from "next/navigation";
+import { countToken } from "./ChatView";
+import { UserDetailContext } from "@/context/UserDetailContext";
 
 const CodeView = () => {
   const { id } = useParams();
@@ -28,22 +30,22 @@ const CodeView = () => {
   const UpdateWorkspace = useMutation(api.workspace.UpdateWorkspace);
   const convex = useConvex();
   const UpdateFiles = useMutation(api.workspace.UpdateFiles);
-
+  const UpdateToken = useMutation(api.users.UpdateToken);
+  const { userDetail, setUserDetail } = useContext(UserDetailContext);
 
   useEffect(() => {
     id && GetFiles();
-  }, [id])
+  }, [id]);
 
   const GetFiles = async () => {
-    setIsGenerating(true)
+    setIsGenerating(true);
     const result = await convex.query(api.workspace.GetWorkspace, {
-      workspaceId: id
-    })
-    const mergedFiles= {...Lookup.DEFAULT_FILE, ...result?.fileData}
-    setFiles(mergedFiles)
-    setIsGenerating(false)
-
-  }
+      workspaceId: id,
+    });
+    const mergedFiles = { ...Lookup.DEFAULT_FILE, ...result?.fileData };
+    setFiles(mergedFiles);
+    setIsGenerating(false);
+  };
 
   useEffect(() => {
     if (messages?.length > 0) {
@@ -72,7 +74,13 @@ const CodeView = () => {
       id,
       files: newFiles,
     });
-    console.log("updated files = ", updatedFiles);
+
+    const token =
+      Number(userDetail?.token) - Number(countToken(JSON.stringify(newFiles)));
+    await UpdateToken({
+      userId: userDetail?._id,
+      token: token,
+    });
     setIsGenerating(false);
     // openPreviewInNewTab(updatedFiles);
     // const updatedMessages = [...msgs, { content: res.response, role: "model" }];

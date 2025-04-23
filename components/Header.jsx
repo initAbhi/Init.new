@@ -6,12 +6,21 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { UserDetailContext } from "@/context/UserDetailContext";
 import { googleLogout } from "@react-oauth/google";
+import { UiContext } from "@/context/UiContext";
+import { useSidebar } from './ui/sidebar';
 
 const Header = () => {
   const { userDetail, setUserDetail } = useContext(UserDetailContext);
+  const { isSignInDialog, setisSignInDialog} = useContext(UiContext)
+    const { toggleSidebar } = useSidebar();
+  // console.log(" - " , userDetail)
+  const onSignIn = () => {
+    setisSignInDialog(true);
+      
+  }
   return (
     <motion.div
-      className="p-4 flex justify-between items-center"
+      className="sm:p-4 flex justify-between items-center"
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6 }}
@@ -80,6 +89,7 @@ const Header = () => {
             <Button
               variant={"ghost"}
               className="text-[#a8a8a8] hover:text-white hover:cursor-pointer"
+              onClick={onSignIn}
             >
               Sign in
             </Button>
@@ -93,7 +103,8 @@ const Header = () => {
               visible: { opacity: 1, y: 0 },
             }}
           >
-            <Button className="bg-[#ff0] hover:bg-[#fcfc47] text-black cursor-pointer drop-shadow-[0_0_10px_rgba(255,255,0,0.7)]">
+              
+            <Button className="bg-[#ff0] hover:bg-[#fcfc47] text-black cursor-pointer drop-shadow-[0_0_10px_rgba(255,255,0,0.7)]"    onClick={onSignIn}>
               Get Started
             </Button>
           </motion.div>
@@ -111,7 +122,7 @@ const Header = () => {
             },
           }}
         >
-          <motion.div
+          {/* <motion.div
             variants={{
               hidden: { opacity: 0, y: 10 },
               visible: { opacity: 1, y: 0 },
@@ -122,13 +133,13 @@ const Header = () => {
               className="text-[#a8a8a8] hover:text-white hover:cursor-pointer"
               onClick={() => {
                 googleLogout();
-                setUserDetail(null);
+                setUserDetail(undefined);
                 localStorage.setItem("user", "null");
               }}
             >
               logout
             </Button>
-          </motion.div>
+          </motion.div> */}
 
           <motion.div
             whileHover={{ scale: 1.05 }}
@@ -138,7 +149,7 @@ const Header = () => {
               visible: { opacity: 1, y: 0 },
             }}
           >
-            <Button className="bg-[#ff0] hover:bg-[#fcfc47] text-black cursor-pointer drop-shadow-[0_0_10px_rgba(255,255,0,0.7)]">
+            <Button className="bg-[#ff0] hover:bg-[#fcfc47] text-black cursor-pointer drop-shadow-[0_0_10px_rgba(255,255,0,0.7)]" onClick={toggleSidebar}>
               {userDetail.name}
             </Button>
           </motion.div>

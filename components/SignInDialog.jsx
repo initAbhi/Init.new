@@ -29,7 +29,7 @@ const googleLogin = useGoogleLogin({
   
       console.log(userInfo);
       const user = userInfo.data;
-      await CreateUser({
+      const dbuser = await CreateUser({
         name:user?.name,
         email: user?.email,
         picture: user?.picture,
@@ -40,7 +40,7 @@ const googleLogin = useGoogleLogin({
         localStorage.setItem('user',JSON.stringify(user))
       }
 
-      setUserDetail(userInfo?.data)
+      setUserDetail(dbuser)
       closeDialog(false)
     },
     onError: errorResponse => console.log(errorResponse),
@@ -53,7 +53,7 @@ const googleLogin = useGoogleLogin({
           <DialogDescription asChild>
             <div className="flex flex-col items-center justify-center gap-3 ">
               <h2 className="font-bold text-2xl text-white text-center">
-                {Lookup.SIGNIN_HEADING}
+            Continue with Init.New 2.0
               </h2>
               <p className="mt-2 text-center">{Lookup.SIGNIN_SUBHEADING}</p>
               <Button onClick={googleLogin} className={"bg-[#ff0] drop-shadow-[0_0_10px_rgba(255,255,0,0.7)] text-black cursor-pointer mt-3 hover:bg-[#fcfc47] " } >Sign In with Google</Button>

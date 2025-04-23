@@ -3,7 +3,10 @@ import { Divide } from "lucide-react";
 import Image from "next/image";
 
 export default function Home() {
-  return <div>
+  return  <div >
+    
+  <div className="">
    <Hero />
-  </div>;
+   </div>
+   </div>
 }

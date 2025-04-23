@@ -14,9 +14,9 @@ const WorkspaceHistory = () => {
   const { toggleSidebar } = useSidebar();
 
   useEffect(() => {
-    userDetail && GetAllWorkspace();
+    userDetail && userDetail != "loading" && GetAllWorkspace();
   }, [userDetail]);
-
+  console.log("all workspace", userDetail)
   const GetAllWorkspace = async () => {
     console.log("worspace userde", userDetail);
     const result = await convex.query(api.workspace.GetAllWorkspace, {
@@ -27,11 +27,11 @@ const WorkspaceHistory = () => {
   };
   return (
     <div>
-      <h2 className="font-medium text-lg ">Your chats</h2>
+      <h2 className="font-medium text-2xl mb-4">Previous chats</h2>
       <div>
         {workspaceList &&
           workspaceList?.map((workspace, index) => (
-              <Button className="w-full flex justify-start" variant={"ghost"}>
+              <Button key={index} className="w-full flex justify-start" variant={"ghost"}>
                     <Link href={"/workspace/" + workspace?._id}>
 
               <h2

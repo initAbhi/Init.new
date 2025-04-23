@@ -11,6 +11,7 @@ import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { UiContext } from "@/context/UiContext";
 
 const Hero = () => {
   console.log("in hero");
@@ -18,12 +19,14 @@ const Hero = () => {
   const [userInput, setUserInput] = useState();
   const { messages, setMessages } = useContext(MessagesContext);
   const { userDetail, setUserDetail } = useContext(UserDetailContext);
-  const [openDialog, setOpenDialog] = useState(false);
+  // const [openDialog, setOpenDialog] = useState(false);
+    const { isSignInDialog, setisSignInDialog} = useContext(UiContext)
+  
   const CreateWorkspace = useMutation(api.workspace.CreateWorkspace);
 
   const onGenerate = async (input) => {
     if (!userDetail?.name) {
-      setOpenDialog(true);
+      setisSignInDialog(true);
       return;
     }
     // setMessages([{ role: "user", content: input }]);
@@ -116,8 +119,8 @@ const Hero = () => {
       </motion.div>
 
       <SignInDialog
-        closeDialog={(v) => setOpenDialog(v)}
-        openDialog={openDialog}
+        closeDialog={(v) => setisSignInDialog(v)}
+        openDialog={isSignInDialog}
       />
     </motion.div>
   );
