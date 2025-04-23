@@ -58,7 +58,7 @@ const CodeView = () => {
     const prom = msgs[msgs?.length - 1].content;
     setIsGenerating(true);
     console.log("generating...");
-    const res = await fetch(`http://localhost:3000/api/test`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_LOCAL_URL}/api/test`, {
       method: "POST",
       body: JSON.stringify({
         prompt: `${JSON.stringify(msgs)} - ${Prompt.CODE_GEN_PROMPT}`,

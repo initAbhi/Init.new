@@ -17,13 +17,10 @@ const test = () => {
   //     }),
   //   });
   //   const response = await res.json();
-  //   console.log(response);
   // };
   const {messages} = useContext(MessagesContext)
   useEffect(() => {
-    console.log("messages " ,messages)
   }, [messages])
-  console.log("test")
   return <div>test</div>;
 };
 

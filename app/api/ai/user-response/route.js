@@ -3,7 +3,6 @@ import getAiResponse from "@/config/AiModel";
 
 export async function POST(req) {
   const { messages, prompt } = await req.json();
-  // console.log(messages)
 
   const formattedMessages = messages.map(({ content, role }) => ({
     role,

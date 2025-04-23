@@ -14,7 +14,6 @@ import { motion } from "framer-motion";
 import { UiContext } from "@/context/UiContext";
 
 const Hero = () => {
-  console.log("in hero");
   const router = useRouter();
   const [userInput, setUserInput] = useState();
   const { messages, setMessages } = useContext(MessagesContext);
@@ -30,12 +29,10 @@ const Hero = () => {
       return;
     }
     // setMessages([{ role: "user", content: input }]);
-    console.log(userDetail)
     const workspaceId = await CreateWorkspace({
       user: userDetail._id,
       messages: [{ role: "user", content: input }],
     });
-    console.log(workspaceId);
     router.push("/workspace/" + workspaceId);
   };
 

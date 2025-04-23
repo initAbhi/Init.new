@@ -5,7 +5,7 @@ export const createUser = async ({ name, email, picture, uid }) => {
   const existing = await User.findOne({ email });
   if (!existing) {
     const user = await User.create({ name, email, picture, uid });
-    console.log('User created:', user._id);
+    // console.log('User created:', user._id);
     return user;
   }
   return existing;

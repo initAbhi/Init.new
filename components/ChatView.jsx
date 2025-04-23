@@ -35,16 +35,13 @@ const ChatView = () => {
   const UpdateToken = useMutation(api.users.UpdateToken);
 
   const { userDetail, setUserDetail } = useContext(UserDetailContext);
-  console.log("initial messages", messages);
 
   useEffect(() => {
     getWorkspaceData();
   }, [id]);
 
   useEffect(() => {
-    console.log("messages outside - ", messages);
     if (messages?.length > 0) {
-      console.log("messages  inside if", messages);
       const role = messages[messages?.length - 1].role;
       if (role == "user") getUserResponse(messages);
     }
@@ -61,7 +58,6 @@ const ChatView = () => {
     setLoader(true);
     const prom = msgs[msgs?.length - 1].content;
     const newPrompt = Prompt.CHAT_PROMPT + prom;
-    console.log(newPrompt);
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_LOCAL_URL}/api/ai/user-response`,
       {
@@ -90,12 +86,10 @@ const ChatView = () => {
   };
 
   const getWorkspaceData = async () => {
-    console.log("getting workspace data from chatview");
     const result = await convex.query(api.workspace.GetWorkspace, {
       workspaceId: id,
     });
     setMessages(result?.messages);
-    console.log("messages loaded");
   };
 
   const onGenerate = async (input) => {
@@ -109,7 +103,6 @@ const ChatView = () => {
       return updated;
     });
   };
-  console.log("check = ", userDetail);
   return (
     <div className="relative h-[85vh] flex flex-col">
      

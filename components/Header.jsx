@@ -2,6 +2,7 @@
 import React, { useContext } from "react";
 import { Button } from "./ui/button";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 // import { motion } from "framer-motion";
 import { motion } from "framer-motion";
 import { UserDetailContext } from "@/context/UserDetailContext";
@@ -15,14 +16,15 @@ const Header = () => {
   const { userDetail, setUserDetail } = useContext(UserDetailContext);
   const { isSignInDialog, setisSignInDialog } = useContext(UiContext);
   const { toggleSidebar } = useSidebar();
-  const {action, setAction} = useContext(ActionContext)
+  const { action, setAction } = useContext(ActionContext);
+  const pathname = usePathname();
 
   const onAction = (action) => {
     setAction({
       actionType: action,
-      timeStamp: Date.now()
-    })
-  }
+      timeStamp: Date.now(),
+    });
+  };
   // console.log(" - " , userDetail)
   const onSignIn = () => {
     setisSignInDialog(true);
@@ -133,25 +135,25 @@ const Header = () => {
             },
           }}
         >
-          <motion.div
-            variants={{
-              hidden: { opacity: 0, y: 10 },
-              visible: { opacity: 1, y: 0 },
-            }}
-          >
-            <Button
-              variant={"ghost"}
-              className="text-[#a8a8a8] hover:text-white hover:cursor-pointer"
-              onClick={() => {
-                // googleLogout();
-                // setUserDetail(undefined);
-                // localStorage.setItem("user", "null");
-                onAction('export')
+          {pathname.includes("workspace") && (
+            <motion.div
+              variants={{
+                hidden: { opacity: 0, y: 10 },
+                visible: { opacity: 1, y: 0 },
               }}
             >
-              <LucideDownload /> Export
-            </Button>
-          </motion.div>
+              <Button
+                variant={"ghost"}
+                className="text-[#a8a8a8] hover:text-white hover:cursor-pointer"
+                onClick={() => {
+                  onAction("export");
+                }}
+              >
+                <LucideDownload /> Export
+              </Button>
+            </motion.div>
+          )}
+
           {/* <motion.div
             variants={{
               hidden: { opacity: 0, y: 10 },
