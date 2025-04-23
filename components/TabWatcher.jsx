@@ -13,6 +13,7 @@ import Lookup from "@/data/Lookup";
 import Prompt from "@/data/Prompt";
 import { Loader2Icon } from "lucide-react";
 import { useSandpack } from "@codesandbox/sandpack-react";
+import SandpackPreviewClient from "./SandpackPreviewClient";
 // import TabWatcher from "./TabWatcher";
 
 const  TabWatcher = () => {
@@ -51,7 +52,7 @@ const  TabWatcher = () => {
 
       <TabsContent value="password" className="h-[700px]">
         <div className="w-full h-[80vh]">
-          <SandpackPreview className="w-full h-full" showNavigator={true} />
+          <SandpackPreviewClient />
         </div>
       </TabsContent>
     </Tabs>
