@@ -56,7 +56,6 @@ Output Format:
 }
 Important Notes:
 
-Prefer Using dark mode
 
 All code must be correct and ready to run without modification.
 
