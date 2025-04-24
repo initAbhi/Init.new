@@ -1,0 +1,17 @@
+Welcome to Init.new – Let’s Build Something Amazing!
+-----
+
+Hi [First Name],
+
+Thank you for signing up for Init.new – your new go-to tool for building web applications with just a prompt. We’re excited to have you on board!
+
+At Init.new, we’re on a mission to make app creation as simple and fast as possible, and your support means everything to us.
+
+If you have any questions, need help getting started, or just want to share feedback — feel free to reply to this email. We’re always here to help and love hearing from our users.
+
+Let’s build the future, one prompt at a time.
+
+Cheers,
+The Init.new Team
+developerabhi17@gmail.com
+https://init-new.vercel.app

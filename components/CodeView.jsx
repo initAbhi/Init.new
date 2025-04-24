@@ -65,6 +65,7 @@ const CodeView = () => {
     //     prompt: `${JSON.stringify(msgs)} - ${Prompt.CODE_GEN_PROMPT}`,
     //   }),
     // });
+    try{
     const res = await getAiResponseClient(
       `${JSON.stringify(msgs)} - ${Prompt.CODE_GEN_PROMPT}`
     );
@@ -74,7 +75,7 @@ const CodeView = () => {
     // console.log("response.files", response?.files);
     const newFiles = response.files;
     const updatedFiles = { ...files, ...newFiles };
-    setFiles(updatedFiles);
+    setFiles(newFiles);
     await UpdateFiles({
       id,
       files: newFiles,
@@ -86,6 +87,9 @@ const CodeView = () => {
       userId: userDetail?._id,
       token: token,
     });
+  }catch(err){
+    generateCode(msgs)
+  }
     setIsGenerating(false);
     // openPreviewInNewTab(updatedFiles);
     // const updatedMessages = [...msgs, { content: res.response, role: "model" }];
@@ -227,6 +231,8 @@ const CodeView = () => {
           ],
         },
       ];
+      // const contents = files
+      console.log("files", files)
       const response = await getAiResponse(prompt, contents);
       console.log("res txt" ,response.text);
       const parsedResponse = JSON.parse(response.text);

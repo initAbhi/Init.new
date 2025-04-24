@@ -61,6 +61,7 @@ const ChatView = () => {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_LOCAL_URL}/api/ai/user-response`,
       {
+
         method: "POST",
         body: JSON.stringify({
           messages: msgs,
@@ -93,6 +94,7 @@ const ChatView = () => {
   };
 
   const onGenerate = async (input) => {
+    setUserInput("")
     setMessages((prevMessages) => {
       const updated = [
         ...(prevMessages || []),
@@ -150,6 +152,7 @@ const ChatView = () => {
         >
           <div className="flex gap-2">
             <textarea
+            value={userInput}
               className="outline-none bg-transparent w-full h-32 max-h-56 resize-none"
               onChange={(e) => setUserInput(e.target.value)}
               type="text"
