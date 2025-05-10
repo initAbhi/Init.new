@@ -23,7 +23,7 @@ const Header = () => {
     setAction({
       actionType: action,
       timeStamp: Date.now(),
-    });
+    });//
   };
   // console.log(" - " , userDetail)
   const onSignIn = () => {
