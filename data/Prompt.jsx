@@ -11,6 +11,12 @@ export default {
 
   CODE_GEN_PROMPT: dedent`Generate a fully functional, aesthetically modern production-ready React project using Vite. Follow this strict structure and rules:
 
+CRITICAL FILE STRUCTURE RULES (do NOT violate these):
+- "/App.js" MUST be at the ROOT level (NOT "/src/App.js"). This is the Sandpack entry point.
+- "/index.js" MUST be at the ROOT level and must import and render App from "./App".
+- Components, pages, hooks, utils go inside "/src/" subfolders.
+- The output JSON keys for root files must be exactly "/App.js" and "/index.js".
+
 Use Tailwind CSS for styling only. DO NOT use any third-party UI component libraries.
 
 Use Lucide React icons only when appropriate, and only from this set: Heart, Shield, Clock, Users, Play, Home, Search, Menu, User, Settings, Mail, Bell, Calendar, Star, Upload, Download, Trash, Edit, Plus, Minus, Check, X, ArrowRight.
@@ -47,10 +53,14 @@ Output Format:
     "/App.js": {
       "code": "code here..."
     },
+    "/index.js": {
+      "code": "import React from 'react'; import ReactDOM from 'react-dom/client'; import App from './App'; ReactDOM.createRoot(document.getElementById('root')).render(<App />);"
+    },
     ...
   },
   "generatedFiles": [
     "/App.js",
+    "/index.js",
     ...
   ]
 }
@@ -69,18 +79,17 @@ File code should use double quotes and be wrapped correctly in JSON.
 Use well-structured folder hierarchy. For example:
 
 
-/components
-  /Navbar
-    Navbar.js
-  /Footer
-    Footer.js
-  /Card
-    Card.js
-/pages
-  Home.js
-  About.js
-/assets
-  (for image URLs or future placeholders)`,
+/src
+  /components
+    /Navbar
+      Navbar.js
+    /Footer
+      Footer.js
+  /pages
+    Home.js
+    About.js
+/App.js    ← ROOT level
+/index.js  ← ROOT level`,
 };
 
 // - The lucide-react library is also available to be imported IF NECCESARY ONLY FOR THE FOLLOWING ICONS: Heart, Shield, Clock, Users, Play, Home, Search, Menu, User, Settings, Mail, Bell, Calendar, Clock, Heart, Star, Upload, Download, Trash, Edit, Plus, Minus, Check, X, ArrowRight. Here's an example of importing and using one: import { Heart } from "lucide-react"\` & \<Heart className=""  />\. PLEASE ONLY USE THE ICONS IF AN ICON IS NEEDED IN THE USER'S REQUEST.

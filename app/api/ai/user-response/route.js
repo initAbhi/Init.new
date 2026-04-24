@@ -12,6 +12,10 @@ export async function POST(req) {
     const response = await getAiResponse(prompt, formattedMessages, "text/plain");
     return NextResponse.json({ response: response.text });
   } catch (err) {
-    return NextResponse.json({ err: err });
+    console.error("AI user-response error:", err);
+    return NextResponse.json(
+      { err: err?.message || "AI request failed" },
+      { status: 500 }
+    );
   }
 }

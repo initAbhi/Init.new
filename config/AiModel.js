@@ -2,7 +2,7 @@ import { GoogleGenAI } from "@google/genai";
 
 export default async function getAiResponse(
   currPrompt,
-  his = [ ],
+  his = [],
   resType = "application/json"
 ) {
   const ai = new GoogleGenAI({
@@ -14,7 +14,7 @@ export default async function getAiResponse(
   };
 
   const chat = ai.chats.create({
-    model: "gemini-2.0-flash",
+    model: "gemini-2.5-flash",
     history: his,
   });
 

@@ -17,7 +17,8 @@ import Prompt from "@/data/Prompt";
 import { useSidebar } from "./ui/sidebar";
 
 export const countToken = (inputText) => {
-  return inputText
+  if (!inputText) return 0;
+  return String(inputText)
     .trim()
     .split(/\s+/)
     .filter((word) => word).length;
@@ -35,16 +36,23 @@ const ChatView = () => {
   const UpdateToken = useMutation(api.users.UpdateToken);
 
   const { userDetail, setUserDetail } = useContext(UserDetailContext);
+  const isRespondingRef = useRef(false); // prevents concurrent / double calls
 
   useEffect(() => {
     getWorkspaceData();
   }, [id]);
 
+  // Single trigger point: fires when the last message is from the user.
+  // useRef lock prevents double-call if onGenerate updates messages while a
+  // response is already in flight.
   useEffect(() => {
-    if (messages?.length > 0) {
-      const role = messages[messages?.length - 1].role;
-      if (role == "user") getUserResponse(messages);
+    if (messages?.length > 0 && !isRespondingRef.current) {
+      const lastMsg = messages[messages.length - 1];
+      if (lastMsg.role === "user") {
+        getUserResponse(messages);
+      }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messages]);
 
   useEffect(() => {
@@ -55,35 +63,48 @@ const ChatView = () => {
   }, [messages]);
 
   const getUserResponse = async (msgs) => {
+    if (isRespondingRef.current) return;
+    isRespondingRef.current = true;
     setLoader(true);
-    const prom = msgs[msgs?.length - 1].content;
-    const newPrompt = Prompt.CHAT_PROMPT + prom;
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_LOCAL_URL}/api/ai/user-response`,
-      {
+    try {
+      const prom = msgs[msgs?.length - 1].content;
+      const newPrompt = Prompt.CHAT_PROMPT + prom;
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_LOCAL_URL}/api/ai/user-response`,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            messages: msgs,
+            prompt: newPrompt,
+          }),
+        }
+      );
+      const res = await response.json();
 
-        method: "POST",
-        body: JSON.stringify({
-          messages: msgs,
-          prompt: newPrompt,
-        }),
+      // Guard: if API returned an error, don't add a broken message
+      if (res.err || !res.response) {
+        console.error("AI API error:", res.err);
+        return;
       }
-    );
-    const res = await response.json();
-    const updatedMessages = [...msgs, { content: res.response, role: "model" }];
-    setMessages(updatedMessages);
 
-    await UpdateWorkspace({ id, newMessages: updatedMessages });
+      const updatedMessages = [...msgs, { content: res.response, role: "model" }];
+      setMessages(updatedMessages);
 
-    const token =
-      Number(userDetail?.token) -
-      Number(countToken(JSON.stringify(res.response)));
-    await UpdateToken({
-      userId: userDetail?._id,
-      token: token,
-    });
+      await UpdateWorkspace({ id, newMessages: updatedMessages });
 
-    setLoader(false);
+      const token =
+        Number(userDetail?.token) -
+        Number(countToken(JSON.stringify(res.response)));
+      await UpdateToken({
+        userId: userDetail?._id,
+        token: token,
+      });
+    } catch (err) {
+      console.error("getUserResponse failed:", err);
+    } finally {
+      isRespondingRef.current = false;
+      setLoader(false);
+    }
   };
 
   const getWorkspaceData = async () => {
@@ -94,21 +115,20 @@ const ChatView = () => {
   };
 
   const onGenerate = async (input) => {
-    setUserInput("")
-    setMessages((prevMessages) => {
-      const updated = [
-        ...(prevMessages || []),
-        { role: "user", content: input },
-      ];
-      UpdateWorkspace({ id, newMessages: updated }); // no need to await here unless needed
-      getUserResponse(updated); // Trigger AI response generation
-      return updated;
-    });
+    setUserInput("");
+    const updated = [
+      ...(messages || []),
+      { role: "user", content: input },
+    ];
+    setMessages(updated); // useEffect picks this up and calls getUserResponse
+    UpdateWorkspace({ id, newMessages: updated });
+    // Note: do NOT call getUserResponse directly here — the useEffect is the
+    // single trigger point, preventing double-calls and infinite loops.
   };
   return (
     <div className="relative h-[85vh] flex flex-col">
-     
-      
+
+
       <div className="flex-1 overflow-y-scroll scrollbar-hidden pl-5">
         {messages?.map((msg, index) => (
           <div
@@ -142,7 +162,7 @@ const ChatView = () => {
       </div>
       {/* Input section */}
       <div className="flex gap=2 items-end">
-        
+
 
         <motion.div
           className="p-5 border rounded-xl max-w-2xl w-full mt-3"
@@ -152,7 +172,7 @@ const ChatView = () => {
         >
           <div className="flex gap-2">
             <textarea
-            value={userInput}
+              value={userInput}
               className="outline-none bg-transparent w-full h-32 max-h-56 resize-none"
               onChange={(e) => setUserInput(e.target.value)}
               type="text"
