@@ -19,6 +19,7 @@ import { useConvex, useMutation } from "convex/react";
 import { useParams } from "next/navigation";
 import { countToken } from "./ChatView";
 import { UserDetailContext } from "@/context/UserDetailContext";
+import { ModelContext } from "@/context/ModelContext";
 
 const CodeView = () => {
   const { id } = useParams();
@@ -31,6 +32,7 @@ const CodeView = () => {
   const UpdateFiles = useMutation(api.workspace.UpdateFiles);
   const UpdateToken = useMutation(api.users.UpdateToken);
   const { userDetail, setUserDetail } = useContext(UserDetailContext);
+  const { selectedModel } = useContext(ModelContext);
 
   useEffect(() => {
     id && GetFiles();
@@ -51,13 +53,13 @@ const CodeView = () => {
     if (messages?.length > 0 && !isGenerating) {
       const lastMsg = messages[messages.length - 1];
       if (lastMsg.role === "user") {
-        generateCode(messages);
+        generateCode(messages, selectedModel);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messages]);
 
-  const generateCode = async (msgs) => {
+  const generateCode = async (msgs, currentModel) => {
     if (isGenerating) return; // prevent concurrent calls
     setIsGenerating(true);
     try {
@@ -66,7 +68,7 @@ const CodeView = () => {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ messages: msgs }),
+          body: JSON.stringify({ messages: msgs, model: currentModel }),
         }
       );
 

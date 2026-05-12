@@ -2,9 +2,11 @@ import { NextResponse } from "next/server";
 import getAiResponse from "@/config/AiModel";
 import Prompt from "@/data/Prompt";
 
+export const maxDuration = 60; // Extend Vercel function timeout
+
 export async function POST(req) {
     try {
-        const { messages } = await req.json();
+        const { messages, model } = await req.json();
 
         const lastMessage = messages?.[messages.length - 1]?.content;
         if (!lastMessage) {
@@ -41,7 +43,7 @@ export async function POST(req) {
             },
         ];
 
-        const response = await getAiResponse(fullPrompt, history, "application/json");
+        const response = await getAiResponse(fullPrompt, history, "application/json", model);
 
         let parsed;
         try {

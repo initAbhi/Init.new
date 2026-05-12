@@ -3,6 +3,7 @@ import { MessagesContext } from "@/context/MessagesContext";
 import { UserDetailContext } from "@/context/UserDetailContext";
 import { api } from "@/convex/_generated/api";
 import { useConvex, useMutation } from "convex/react";
+import { ModelContext } from "@/context/ModelContext";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import React, { useContext, useEffect, useRef, useState } from "react";
@@ -36,6 +37,7 @@ const ChatView = () => {
   const UpdateToken = useMutation(api.users.UpdateToken);
 
   const { userDetail, setUserDetail } = useContext(UserDetailContext);
+  const { selectedModel, setSelectedModel } = useContext(ModelContext);
   const isRespondingRef = useRef(false); // prevents concurrent / double calls
 
   useEffect(() => {
@@ -49,7 +51,7 @@ const ChatView = () => {
     if (messages?.length > 0 && !isRespondingRef.current) {
       const lastMsg = messages[messages.length - 1];
       if (lastMsg.role === "user") {
-        getUserResponse(messages);
+        getUserResponse(messages, selectedModel);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -62,7 +64,7 @@ const ChatView = () => {
     return () => clearTimeout(timeout);
   }, [messages]);
 
-  const getUserResponse = async (msgs) => {
+  const getUserResponse = async (msgs, currentModel) => {
     if (isRespondingRef.current) return;
     isRespondingRef.current = true;
     setLoader(true);
@@ -73,9 +75,11 @@ const ChatView = () => {
         `${process.env.NEXT_PUBLIC_LOCAL_URL}/api/ai/user-response`,
         {
           method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             messages: msgs,
             prompt: newPrompt,
+            model: currentModel,
           }),
         }
       );
@@ -190,8 +194,18 @@ const ChatView = () => {
               </motion.div>
             )}
           </div>
-          <div>
-            <Link className="h-5 w-5" />
+          <div className="flex justify-between items-center mt-2">
+            <div>
+              <Link className="h-5 w-5" />
+            </div>
+            <select
+              value={selectedModel}
+              onChange={(e) => setSelectedModel(e.target.value)}
+              className="bg-[#272727] text-sm text-white px-3 py-1 rounded-md outline-none cursor-pointer"
+            >
+              <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
+              <option value="openai">OpenAI ChatGPT</option>
+            </select>
           </div>
         </motion.div>
       </div>

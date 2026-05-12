@@ -12,12 +12,14 @@ import { api } from "@/convex/_generated/api";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { UiContext } from "@/context/UiContext";
+import { ModelContext } from "@/context/ModelContext";
 
 const Hero = () => {
   const router = useRouter();
   const [userInput, setUserInput] = useState();
   const { messages, setMessages } = useContext(MessagesContext);
   const { userDetail, setUserDetail } = useContext(UserDetailContext);
+  const { selectedModel, setSelectedModel } = useContext(ModelContext);
   // const [openDialog, setOpenDialog] = useState(false);
     const { isSignInDialog, setisSignInDialog} = useContext(UiContext)
   
@@ -83,8 +85,18 @@ const Hero = () => {
             </motion.div>
           )}
         </div>
-        <div>
-          <Link className="h-5 w-5" />
+        <div className="flex justify-between items-center mt-2">
+          <div>
+            <Link className="h-5 w-5" />
+          </div>
+          <select
+            value={selectedModel}
+            onChange={(e) => setSelectedModel(e.target.value)}
+            className="bg-[#272727] text-sm text-white px-3 py-1 rounded-md outline-none cursor-pointer"
+          >
+            <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
+            <option value="openai">OpenAI ChatGPT</option>
+          </select>
         </div>
       </motion.div>
 

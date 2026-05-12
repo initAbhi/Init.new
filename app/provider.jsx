@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { MessagesContext } from "@/context/MessagesContext";
 import { UserDetailContext } from "@/context/UserDetailContext";
+import { ModelContext } from "@/context/ModelContext";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { useConvex } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -17,6 +18,7 @@ const Provider = ({ children }) => {
   const [userDetail, setUserDetail] = useState("loading");
   const [isSignInDialog, setisSignInDialog] = useState(false);
   const [action, setAction] = useState()
+  const [selectedModel, setSelectedModel] = useState("gemini-2.5-flash")
   const router = useRouter()
   // console.log("client id", process.env.NEXT_PUBLIC_GOOGLE_AUTH_CLIENT_ID_KEY);
   const convex = useConvex();
@@ -45,25 +47,27 @@ const Provider = ({ children }) => {
     >
       <UserDetailContext.Provider value={{ userDetail, setUserDetail }}>
         <MessagesContext.Provider value={{ messages, setMessages }}>
-          <UiContext.Provider value={{ isSignInDialog, setisSignInDialog }}>
-            <SidebarProvider defaultOpen={false}>
-              <AppSidebar />
-              <ActionContext.Provider value={{action, setAction}}>
+          <ModelContext.Provider value={{ selectedModel, setSelectedModel }}>
+            <UiContext.Provider value={{ isSignInDialog, setisSignInDialog }}>
+              <SidebarProvider defaultOpen={false}>
+                <AppSidebar />
+                <ActionContext.Provider value={{action, setAction}}>
 
-              <NextThemesProvider
-                attribute="class"
-                defaultTheme="dark"
-                enableSystem
-                disableTransitionOnChange
-                >
-                <div className="w-screen p-4 md:p-0">
+                <NextThemesProvider
+                  attribute="class"
+                  defaultTheme="dark"
+                  enableSystem
+                  disableTransitionOnChange
+                  >
+                  <div className="w-screen p-4 md:p-0">
 
-                {children}
-                </div>
-              </NextThemesProvider>
-                </ActionContext.Provider>
-            </SidebarProvider>
-          </UiContext.Provider>
+                  {children}
+                  </div>
+                </NextThemesProvider>
+                  </ActionContext.Provider>
+              </SidebarProvider>
+            </UiContext.Provider>
+          </ModelContext.Provider>
         </MessagesContext.Provider>
       </UserDetailContext.Provider>
     </GoogleOAuthProvider>
@@ -71,3 +75,4 @@ const Provider = ({ children }) => {
 };
 
 export default Provider;
+
