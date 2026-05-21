@@ -4,7 +4,11 @@ import getAiResponse from "@/config/AiModel";
 export const maxDuration = 60;
 
 export async function POST(req) {
-  const { messages, prompt, model } = await req.json();
+  const { messages, prompt, model, userEmail } = await req.json();
+
+  if (model === "gpt-4o" && userEmail !== process.env.ADMIN_EMAIL) {
+    return NextResponse.json({ err: "Unauthorized access to premium model" }, { status: 403 });
+  }
 
   const formattedMessages = messages.map(({ content, role }) => ({
     role,

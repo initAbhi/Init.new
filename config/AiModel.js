@@ -12,8 +12,8 @@ export default async function getAiResponse(
 
   while (attempts < MAX_RETRIES) {
     try {
-      if (model === "openai") {
-        return await getOpenAIResponse(currPrompt, his, resType);
+      if (model === "openai" || model === "gpt-4o") {
+        return await getOpenAIResponse(currPrompt, his, resType, model);
       } else {
         return await getGeminiResponse(currPrompt, his, resType);
       }
@@ -55,7 +55,7 @@ async function getGeminiResponse(currPrompt, his, resType) {
   return response;
 }
 
-async function getOpenAIResponse(currPrompt, his, resType) {
+async function getOpenAIResponse(currPrompt, his, resType, requestedModel) {
   if (!process.env.OPENAI_API_KEY) {
     throw new Error("OPENAI_API_KEY is not set in environment variables.");
   }
@@ -78,7 +78,7 @@ async function getOpenAIResponse(currPrompt, his, resType) {
   });
 
   const responseFormat = resType === "application/json" ? { type: "json_object" } : { type: "text" };
-  const modelName = process.env.OPENAI_MODEL || "gpt-4o-mini";
+  const modelName = requestedModel === "gpt-4o" ? "gpt-4o" : (process.env.OPENAI_MODEL || "gpt-4o-mini");
 
   const completion = await openai.chat.completions.create({
     model: modelName,

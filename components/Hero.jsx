@@ -96,6 +96,9 @@ const Hero = () => {
           >
             <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
             <option value="openai">OpenAI ChatGPT</option>
+            {userDetail?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL && (
+              <option value="gpt-4o">OpenAI GPT-4o (Admin Only)</option>
+            )}
           </select>
         </div>
       </motion.div>

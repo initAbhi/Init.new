@@ -90,6 +90,13 @@ Use well-structured folder hierarchy. For example:
     About.js
 /App.js    ← ROOT level
 /index.js  ← ROOT level`,
-};
 
-// - The lucide-react library is also available to be imported IF NECCESARY ONLY FOR THE FOLLOWING ICONS: Heart, Shield, Clock, Users, Play, Home, Search, Menu, User, Settings, Mail, Bell, Calendar, Clock, Heart, Star, Upload, Download, Trash, Edit, Plus, Minus, Check, X, ArrowRight. Here's an example of importing and using one: import { Heart } from "lucide-react"\` & \<Heart className=""  />\. PLEASE ONLY USE THE ICONS IF AN ICON IS NEEDED IN THE USER'S REQUEST.
+  OPENAI_SPECIFIC_PROMPT: dedent`
+CRITICAL OPENAI INSTRUCTIONS:
+- ChatGPT models must strictly provide CLEAN, BUG-FREE code.
+- Ensure the UI is absolutely on point: highly polished, flawless styling, and incredibly premium appearance.
+- Double-check all React hooks, dependencies, and Tailwind classes for any syntax errors or missing imports.
+- Make absolutely sure that the generated code compiles correctly inside the Sandpack environment without any "module not found" or parsing errors.
+- Ensure that the JSON is strictly and perfectly formatted, with all internal quotes properly escaped.
+`,
+};

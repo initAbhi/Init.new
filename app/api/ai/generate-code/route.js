@@ -6,7 +6,11 @@ export const maxDuration = 60; // Extend Vercel function timeout
 
 export async function POST(req) {
     try {
-        const { messages, model } = await req.json();
+        const { messages, model, userEmail } = await req.json();
+
+        if (model === "gpt-4o" && userEmail !== process.env.ADMIN_EMAIL) {
+            return NextResponse.json({ err: "Unauthorized access to premium model" }, { status: 403 });
+        }
 
         const lastMessage = messages?.[messages.length - 1]?.content;
         if (!lastMessage) {
@@ -16,7 +20,10 @@ export async function POST(req) {
             );
         }
 
-        const fullPrompt = `${JSON.stringify(messages)} - ${Prompt.CODE_GEN_PROMPT}`;
+        let fullPrompt = `${JSON.stringify(messages)} - ${Prompt.CODE_GEN_PROMPT}`;
+        if (model === "openai" || model === "gpt-4o") {
+            fullPrompt += `\n\n${Prompt.OPENAI_SPECIFIC_PROMPT}`;
+        }
 
         // Hard-coded few-shot history to guide the model output format
         const history = [
