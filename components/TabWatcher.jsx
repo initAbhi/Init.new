@@ -12,13 +12,23 @@ import { autocompletion, completionKeymap } from "@codemirror/autocomplete";
 import Lookup from "@/data/Lookup";
 import Prompt from "@/data/Prompt";
 import { Loader2Icon } from "lucide-react";
-import { useSandpack } from "@codesandbox/sandpack-react";
+import { useSandpack, UnstyledOpenInCodeSandboxButton } from "@codesandbox/sandpack-react";
 import SandpackPreviewClient from "./SandpackPreviewClient";
-// import TabWatcher from "./TabWatcher";
+import { ActionContext } from "@/context/ActionContext";
 
 const  TabWatcher = () => {
   const { sandpack } = useSandpack();
   const [tab, setTab] = useState("account");
+  const { action } = React.useContext(ActionContext);
+  const exportBtnRef = React.useRef(null);
+
+  React.useEffect(() => {
+    if (action?.actionType === "export") {
+      // Find the inner button element and click it
+      const btn = exportBtnRef.current?.querySelector("button");
+      if (btn) btn.click();
+    }
+  }, [action]);
 
   const handleTabChange = (value) => {
     setTab(value);
@@ -55,6 +65,12 @@ const  TabWatcher = () => {
           <SandpackPreviewClient />
         </div>
       </TabsContent>
+
+      <div ref={exportBtnRef} className="hidden">
+        <UnstyledOpenInCodeSandboxButton>
+          Export
+        </UnstyledOpenInCodeSandboxButton>
+      </div>
     </Tabs>
   );
 };

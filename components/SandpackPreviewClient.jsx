@@ -20,8 +20,6 @@ const SandpackPreviewClient = () => {
       const result = await client.getCodeSandboxURL()
       if(action?.actionType == 'deploy'){
         window.open('https://'+result?.sandboxId+'.csb.app/')
-      }else if(action?.actionType=='export'){
-        window?.open(result?.editorUrl)
       }
     }
   }
